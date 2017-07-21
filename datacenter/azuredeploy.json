@@ -2,9 +2,25 @@
   "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {  },
-  "variables": {
-    "sharedTemplateUrl": "[uri(deployment().properties.templateLink.uri, 'sharedresources.json')]"
-    },
-  "resources": [  ],
-  "outputs": {  }
+  "variables": { },
+  "resources": [
+    { 
+      "apiVersion": "2017-05-10", 
+      "name": "sharedResources", 
+      "type": "Microsoft.Resources/deployments", 
+      "properties": { 
+        "mode": "Incremental", 
+        "templateLink": {
+          "uri": "https://raw.githubusercontent.com/PracticeIQ/arm-templates/master/datacenter/sharedresources.json",
+          "contentVersion": "1.0.0.0"
+        }
+      } 
+    } 
+    ],
+  "outputs": { 
+    "result": {
+      "type": "string",
+      "value": "[reference('linkedTemplate').outputs.result.value]"
+    }
+   }
 }
