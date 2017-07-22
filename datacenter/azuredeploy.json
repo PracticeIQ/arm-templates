@@ -20,7 +20,7 @@
   "outputs": { 
     "result": {
       "type": "string",
-      "value": "[reference('linkedTemplate').outputs.result.value]"
+      "value": "[reference('sharedResources').outputs.result.value]"
     }
    }
 }
