@@ -16,7 +16,7 @@
   "resources": [ 
     {
       "comments": "The Datacenter Virtual Network",
-      "name": "[concat(parameters('datacenterName'), '-datacenter-vnet']",
+      "name": "[concat(parameters('datacenterName'), '-datacenter-vnet')]",
       "type": "Microsoft.Network/virtualNetworks",
       "apiVersion": "2017-06-01",
       "location": "[resourceGroup().location]",
