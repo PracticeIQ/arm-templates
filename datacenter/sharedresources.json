@@ -51,7 +51,9 @@
       "location": "[resourceGroup().location]",
       "tags": {},
       "properties": { },
-      "sku": { }
+      "sku": {
+        "name": "Aligned"
+       }
     },
     {
       "name": "[concat(parameters('datacenterName'), '-client-as')]",
@@ -60,7 +62,9 @@
       "location": "[resourceGroup().location]",
       "tags": {},
       "properties": { },
-      "sku": { }
+      "sku": { 
+        "name": "Aligned"
+      }
     }
   ],
   "outputs": { 
