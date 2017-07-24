@@ -1,18 +1,32 @@
 {
   "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
-  "parameters": {  },
+  "parameters": { 
+    "datacenterName": {
+      "defaultValue": null,
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 3,
+      "metadata": {
+        "description": "The 3-char datacenter string that prefixes the resource group." 
+      }
+    }
+   },
   "variables": { },
   "resources": [
     { 
+      "comments": "Shared resources include the VNet, Network Security Groups, and Availability Sets",
       "apiVersion": "2017-05-10", 
       "name": "sharedResources", 
       "type": "Microsoft.Resources/deployments", 
       "properties": { 
         "mode": "Incremental", 
         "templateLink": {
-          "uri": "https://raw.githubusercontent.com/PracticeIQ/arm-templates/master/datacenter/sharedresources.json",
+          "uri": "[[uri(deployment().properties.templateLink.uri, 'sharedresources.json')]]",
           "contentVersion": "1.0.0.0"
+        },
+        "parameters": { 
+          "datacenterName":{"value": "[parameters('datacenterName')]"} 
         }
       } 
     } 
