@@ -22,7 +22,7 @@
       "properties": { 
         "mode": "Incremental", 
         "templateLink": {
-          "uri": "[[uri(deployment().properties.templateLink.uri, 'sharedresources.json')]]",
+          "uri": "[uri(deployment().properties.templateLink.uri, 'sharedresources.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": { 
