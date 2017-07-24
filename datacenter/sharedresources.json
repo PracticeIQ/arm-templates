@@ -45,6 +45,7 @@
       }
     },
     {
+      "comments": "Availability Set for the Karbon Web/Svc tier",
       "name": "[concat(parameters('datacenterName'), '-karbon-as')]",
       "type": "Microsoft.Compute/availabilitySets",
       "apiVersion": "2016-04-30-preview",
@@ -59,6 +60,7 @@
        }
     },
     {
+      "comments": "Availability Set for the Client Web/Svc tier",
       "name": "[concat(parameters('datacenterName'), '-client-as')]",
       "type": "Microsoft.Compute/availabilitySets",
       "apiVersion": "2016-04-30-preview",
