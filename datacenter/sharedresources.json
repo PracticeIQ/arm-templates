@@ -43,11 +43,29 @@
         ],
         "virtualNetworkPeerings": [ ]
       }
+    },
+    {
+      "name": "[concat(parameters('datacenterName'), '-karbon-as')]",
+      "type": "Microsoft.Compute/availabilitySets",
+      "apiVersion": "2016-04-30-preview",
+      "location": "[resourceGroup().location]",
+      "tags": {},
+      "properties": { },
+      "sku": { }
+    },
+    {
+      "name": "[concat(parameters('datacenterName'), '-client-as')]",
+      "type": "Microsoft.Compute/availabilitySets",
+      "apiVersion": "2016-04-30-preview",
+      "location": "[resourceGroup().location]",
+      "tags": {},
+      "properties": { },
+      "sku": { }
     }
-   ],
+  ],
   "outputs": { 
     "result": {
-        "value": "Display This, take 2",
+        "value": "Display This, take 3",
         "type" : "string"
     }
    }
