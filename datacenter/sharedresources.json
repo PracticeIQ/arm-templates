@@ -12,7 +12,9 @@
       }
     }
   },
-  "variables": {},
+  "variables": {
+    "webNetworkSecurityGroupName": "[concat(parameters('datacenterName'), '-web-nsg')]"
+  },
   "resources": [
     {
       "comments": "The Datacenter Virtual Network",
@@ -46,7 +48,7 @@
     },
     {
       "comments": "Network Security Group for the Web/Svc tier",
-      "name": "[concat(parameters('datacenterName'), '-web-nsg')]",
+      "name": "[variables('webNetworkSecurityGroupName')]",
       "type": "Microsoft.Network/networkSecurityGroups",
       "apiVersion": "2017-03-01",
       "location": "[resourceGroup().location]",
@@ -219,6 +221,10 @@
   "outputs": {
     "result": {
       "value": "Display This, take 4",
+      "type": "string"
+    },
+    "webNetworkSecurityGroupName": {
+      "value": "[variables('webNetworkSecurityGroupName')]",
       "type": "string"
     }
   }
