@@ -49,6 +49,9 @@
           },
           "webNetworkSecurityGroupName": {
             "value": "[reference('sharedResources').outputs.webNetworkSecurityGroupName.value]"
+          },
+          "virtualNetworkName": {
+            "value": "[reference('sharedResources').outputs.webNetworkSecurityGroupName.value]"
           }
         }
       },
