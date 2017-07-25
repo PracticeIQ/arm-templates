@@ -51,7 +51,7 @@
             "value": "[reference('sharedResources').outputs.webNetworkSecurityGroupName.value]"
           }
         }
-      }     
+      }
     }
   ],
   "outputs": {
