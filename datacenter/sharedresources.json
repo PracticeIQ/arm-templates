@@ -13,12 +13,13 @@
     }
   },
   "variables": {
-    "webNetworkSecurityGroupName": "[concat(parameters('datacenterName'), '-web-nsg')]"
+    "webNetworkSecurityGroupName": "[concat(parameters('datacenterName'), '-web-nsg')]",
+    "virtualNetworkName": "[concat(parameters('datacenterName'), '-datacenter-vnet')]"
   },
   "resources": [
     {
       "comments": "The Datacenter Virtual Network",
-      "name": "[concat(parameters('datacenterName'), '-datacenter-vnet')]",
+      "name": "[variables('virtualNetworkName')]",
       "type": "Microsoft.Network/virtualNetworks",
       "apiVersion": "2017-06-01",
       "location": "[resourceGroup().location]",
@@ -225,6 +226,10 @@
     },
     "webNetworkSecurityGroupName": {
       "value": "[variables('webNetworkSecurityGroupName')]",
+      "type": "string"
+    },
+    "virtualNetworkName": {
+      "value": "[variables('virtualNetworkName')]",
       "type": "string"
     }
   }
