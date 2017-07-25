@@ -8,12 +8,12 @@
       "minLength": 3,
       "maxLength": 3,
       "metadata": {
-        "description": "The 3-char datacenter string that prefixes the resource group." 
+        "description": "The 3-char datacenter string that prefixes the resource group."
       }
     }
   },
-  "variables": {  },
-  "resources": [ 
+  "variables": {},
+  "resources": [
     {
       "comments": "The Datacenter Virtual Network",
       "name": "[concat(parameters('datacenterName'), '-datacenter-vnet')]",
@@ -31,18 +31,159 @@
           {
             "properties": {
               "addressPrefix": "10.0.0.0/24"
-            }, 
+            },
             "name": "Public"
           },
           {
             "properties": {
               "addressPrefix": "10.0.1.0/24"
-            }, 
+            },
             "name": "Private"
           }
         ],
-        "virtualNetworkPeerings": [ ]
+        "virtualNetworkPeerings": []
       }
+    },
+    {
+      "comments": "Network Security Group for the Web/Svc tier",
+      "name": "[concat(parameters('datacenterName'), '-web-nsg')]",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2017-03-01",
+      "location": "[resourceGroup().location]",
+      "tags": {},
+      "properties": {
+        "securityRules": [
+          {
+            "name": "default-allow-rdp",
+            "properties": {
+              "description": "Default TCP port for Remote Desktop, so we can manage our VMs",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "3389",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 1000,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "http",
+            "properties": {
+              "description": "Incoming HTTP, no TLS as it's terminated on the Gateway",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "80",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 1010,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "ftp",
+            "properties": {
+              "description": "We may use this for source code deployment, at least in the beginning. DSC may have other mechanisms",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "21",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 1020,
+              "direction": "Inbound"
+            }
+          }
+        ],
+        "defaultSecurityRules": [
+          {
+            "name": "AllowVnetInBound",
+            "properties": {
+              "description": "Allow inbound traffic from all VMs in VNET",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "VirtualNetwork",
+              "destinationAddressPrefix": "VirtualNetwork",
+              "access": "Allow",
+              "priority": 65000,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "AllowAzureLoadBalancerInBound",
+            "properties": {
+              "description": "Allow inbound traffic from azure load balancer/gateway",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "AzureLoadBalancer",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 65001,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "DenyAllInBound",
+            "properties": {
+              "description": "Deny all other inbound traffic",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Deny",
+              "priority": 65500,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "AllowVnetOutBound",
+            "properties": {
+              "description": "Allow outbound traffic from all VMs to all VMs in VNET",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "VirtualNetwork",
+              "destinationAddressPrefix": "VirtualNetwork",
+              "access": "Allow",
+              "priority": 65000,
+              "direction": "Outbound"
+            }
+          },
+          {
+            "name": "AllowInternetOutBound",
+            "properties": {
+              "description": "Allow outbound traffic from all VMs to Internet; will need this if we pull from public repos",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "Internet",
+              "access": "Allow",
+              "priority": 65001,
+              "direction": "Outbound"
+            }
+          },
+          {
+            "name": "DenyAllOutBound",
+            "properties": {
+              "description": "Deny all other outbound traffic",
+              "protocol": "*",
+              "sourcePortRange": "*",
+              "destinationPortRange": "*",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Deny",
+              "priority": 65500,
+              "direction": "Outbound"
+            }
+          }
+        ]
+      },
+      "resources": []
     },
     {
       "comments": "Availability Set for the Karbon Web/Svc tier",
@@ -54,10 +195,10 @@
       "properties": {
         "platformUpdateDomainCount": 5,
         "platformFaultDomainCount": 3
-       },
+      },
       "sku": {
         "name": "Aligned"
-       }
+      }
     },
     {
       "comments": "Availability Set for the Client Web/Svc tier",
@@ -66,19 +207,19 @@
       "apiVersion": "2016-04-30-preview",
       "location": "[resourceGroup().location]",
       "tags": {},
-      "properties": { 
+      "properties": {
         "platformUpdateDomainCount": 5,
         "platformFaultDomainCount": 3
       },
-      "sku": { 
+      "sku": {
         "name": "Aligned"
       }
     }
   ],
-  "outputs": { 
+  "outputs": {
     "result": {
-        "value": "Display This, take 3",
-        "type" : "string"
+      "value": "Display This, take 4",
+      "type": "string"
     }
-   }
+  }
 }
