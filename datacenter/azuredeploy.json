@@ -51,7 +51,10 @@
             "value": "[reference('sharedResources').outputs.webNetworkSecurityGroupName.value]"
           }
         }
-      }
+      },
+      "dependsOn": [
+        "Microsoft.Resources/deployments/sharedResources"
+      ]
     }
   ],
   "outputs": {
