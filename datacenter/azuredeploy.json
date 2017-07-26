@@ -34,7 +34,7 @@
   "variables": {
     "karbonIpNamePrefix": "[concat(parameters('datacenterName'), '-karbon-ip-vm')]",
     "karbonNicNamePrefix": "[concat(parameters('datacenterName'), '-karbon-nic-vm')]",
-    "karbonVmNamePrefix": "[concat(parameters('datacenterName'), 'KarbonVm')]"
+    "karbonVmNamePrefix": "[concat(parameters('datacenterName'), 'karbonvm')]"
   },
   "resources": [
     {
