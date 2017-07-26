@@ -27,7 +27,7 @@
         }
     },
     "variables": {
-        "publicIpAddressName": "[concat(parameters('datacenterName'), '-karbon-vm00-pip')]",
+        "publicIpAddressName": "[concat(parameters('datacenterName'), '-karbon-vm1-pip')]",
         "vnetId": "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
         "subnetRef": "[concat(variables('vnetId'), '/subnets/', 'Private')]"
 
@@ -40,12 +40,15 @@
             "apiVersion": "2017-03-01",
             "location": "[resourceGroup().location]",
             "properties": {
-                "publicIPAllocationMethod": "Dynamic"
+                "publicIPAllocationMethod": "Dynamic",
+                "dnsSettings": {
+                    "domainNameLabel": "karbon-vm1"
+                }
             }
         },
         {
             "comments": "The default network interface definition for a Karbon VM",
-            "name": "[concat(parameters('datacenterName'), '-karbon-vm00-ni')]",
+            "name": "[concat(parameters('datacenterName'), '-karbon-vm1-ni')]",
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2016-09-01",
             "location": "[resourceGroup().location]",
