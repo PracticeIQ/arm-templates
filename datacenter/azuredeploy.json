@@ -10,6 +10,15 @@
       "metadata": {
         "description": "The 3-char datacenter string that prefixes the resource group."
       }
+    },
+    "karbonVMType": {
+      "defaultValue": null,
+      "type": "string"
+    },
+    "karbonVMCount": {
+      "defaultValue": null,
+      "type": "int",
+      "maxValue": 10
     }
   },
   "variables": {},
@@ -64,6 +73,10 @@
     "result": {
       "type": "string",
       "value": "[reference('sharedResources').outputs.result.value]"
+    },
+    "karbonVMCount": {
+      "type": "int",
+      "value": "[parameters('karbonVMCount')]"
     }
   }
 }
