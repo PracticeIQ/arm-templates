@@ -18,10 +18,24 @@
     "karbonVMCount": {
       "defaultValue": null,
       "type": "int",
-      "maxValue": 10
+      "maxValue": 10,
+      "metadata": {
+        "description": "How many Karbon VMs to provision. Only matters if the script sets a karbonStartIndex, default comes from env params"
+      }
+    },
+    "karbonStartIndex": {
+      "defaultValue": 0,
+      "type": "int",
+      "metadata": {
+        "description": "This must only be set by the calling script, as it contains the logic of looking at existing VMs"
+      }
     }
   },
-  "variables": {},
+  "variables": {
+    "karbonIpNamePrefix": "[concat(parameters('datacenterName'), '-karbon-ip-vm')]",
+    "karbonNicNamePrefix": "[concat(parameters('datacenterName'), '-karbon-nic-vm')]",
+    "karbonVmNamePrefix": "[concat(parameters('datacenterName'), 'KarbonVm')]"
+  },
   "resources": [
     {
       "comments": "Shared resources include the VNet, Network Security Groups, and Availability Sets",
@@ -42,9 +56,10 @@
       }
     },
     {
+      "condition": "[greater(parameters('karbonStartIndex'), 0)]",
       "comments": "Karbon web/svc resources",
       "apiVersion": "2017-05-10",
-      "name": "karbonVmResources",
+      "name": "[concat('karbonDeployVm', copyIndex(parameters('karbonStartIndex')))]",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "Incremental",
@@ -53,16 +68,28 @@
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
-          "datacenterName": {
-            "value": "[parameters('datacenterName')]"
-          },
           "webNetworkSecurityGroupName": {
             "value": "[reference('sharedResources').outputs.webNetworkSecurityGroupName.value]"
           },
           "virtualNetworkName": {
             "value": "[reference('sharedResources').outputs.virtualNetworkName.value]"
+          },
+          "karbonNicName": {
+            "value": "[concat(variables('karbonNicNamePrefix'), copyIndex(parameters('karbonStartIndex')))]"
+          },
+          "karbonIpName": {
+            "value": "[concat(variables('karbonIpNamePrefix'), copyIndex(parameters('karbonStartIndex')))]"
+          },
+          "karbonVmName": {
+            "value": "[concat(variables('karbonVmNamePrefix'), copyIndex(parameters('karbonStartIndex')))]"
           }
         }
+      },
+      "copy": {
+        "name": "karbonIterator",
+        "count": "[parameters('karbonVMCount')]",
+        "mode": "Serial",
+        "batchSize": 2
       },
       "dependsOn": [
         "Microsoft.Resources/deployments/sharedResources"
