@@ -14,7 +14,8 @@
   },
   "variables": {
     "webNetworkSecurityGroupName": "[concat(parameters('datacenterName'), '-web-nsg')]",
-    "virtualNetworkName": "[concat(parameters('datacenterName'), '-datacenter-vnet')]"
+    "virtualNetworkName": "[concat(parameters('datacenterName'), '-datacenter-vnet')]",
+    "diagnosticStorageAccountName": "[concat(parameters('datacenterName'), 'diagstr', uniqueString(resourceGroup().id))]"
   },
   "resources": [
     {
@@ -217,19 +218,29 @@
       "sku": {
         "name": "Aligned"
       }
+    },
+    {
+      "comments": "Use this storage account for all the VM diagnostics",
+      "name": "[variables('diagnosticStorageAccountName')]",
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2015-06-15",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "accountType": "Standard_LRS"
+      }
     }
   ],
   "outputs": {
-    "result": {
-      "value": "Display This, take 5",
-      "type": "string"
-    },
     "webNetworkSecurityGroupName": {
       "value": "[variables('webNetworkSecurityGroupName')]",
       "type": "string"
     },
     "virtualNetworkName": {
       "value": "[variables('virtualNetworkName')]",
+      "type": "string"
+    },
+    "diagnosticStorageAccountName": {
+      "value": "variables('diagnosticStorageAccountName')",
       "type": "string"
     }
   }

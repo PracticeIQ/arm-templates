@@ -11,7 +11,7 @@
         "description": "The 3-char datacenter string that prefixes the resource group."
       }
     },
-    "karbonVMType": {
+    "karbonVMSize": {
       "defaultValue": null,
       "type": "string"
     },
@@ -29,6 +29,10 @@
       "metadata": {
         "description": "This must only be set by the calling script, as it contains the logic of looking at existing VMs"
       }
+    },
+    "adminPassword": {
+      "defaultValue": null,
+      "type": "securestring"
     }
   },
   "variables": {
@@ -73,6 +77,9 @@
           "virtualNetworkName": {
             "value": "[reference('sharedResources').outputs.virtualNetworkName.value]"
           },
+          "diagnosticStorageAccountName": {
+            "value": "[reference('sharedResources').outputs.diagnosticStorageAccountName]"
+          },
           "karbonNicName": {
             "value": "[concat(variables('karbonPrefix'), copyIndex(parameters('karbonStartIndex')), '-nic1')]"
           },
@@ -81,6 +88,12 @@
           },
           "karbonVmName": {
             "value": "[concat(variables('karbonVmNamePrefix'), copyIndex(parameters('karbonStartIndex')))]"
+          },
+          "adminPassword": {
+            "value": "[parameters('adminPassword')]"
+          },
+          "karbonVMSize": {
+            "value": "[parameters('karbonVMSize')]"
           }
         }
       },
