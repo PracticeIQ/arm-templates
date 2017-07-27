@@ -111,13 +111,13 @@
     }
   ],
   "outputs": {
-    "result": {
-      "type": "string",
-      "value": "[reference('sharedResources').outputs.result.value]"
-    },
     "karbonVMCount": {
       "type": "int",
       "value": "[parameters('karbonVMCount')]"
+    },
+    "diagnosticStorageAccountName": {
+      "type": "string",
+      "value": "[reference('sharedResources').outputs.diagnosticStorageAccountName.value]"
     }
   }
 }
