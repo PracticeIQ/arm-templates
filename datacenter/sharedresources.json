@@ -241,11 +241,11 @@
       "type": "string"
     },
     "diagnosticStorageAccountName": {
-      "value": "variables('diagnosticStorageAccountName')",
+      "value": "[variables('diagnosticStorageAccountName')]",
       "type": "string"
     },
     "karbonAvailabilitySetName": {
-      "value": "variables('karbonAvailabilitySetName')",
+      "value": "[variables('karbonAvailabilitySetName')]",
       "type": "string"
     }
   }
