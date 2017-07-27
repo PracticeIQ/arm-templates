@@ -78,7 +78,7 @@
             "value": "[reference('sharedResources').outputs.virtualNetworkName.value]"
           },
           "diagnosticStorageAccountName": {
-            "value": "[reference('sharedResources').outputs.diagnosticStorageAccountName]"
+            "value": "[reference('sharedResources').outputs.diagnosticStorageAccountName.value]"
           },
           "karbonNicName": {
             "value": "[concat(variables('karbonPrefix'), copyIndex(parameters('karbonStartIndex')), '-nic1')]"
@@ -94,6 +94,9 @@
           },
           "karbonVMSize": {
             "value": "[parameters('karbonVMSize')]"
+          },
+          "karbonAvailabilitySetName": {
+            "value": "[reference('sharedResources').outputs.karbonAvailabilitySetName.value]"
           }
         }
       },

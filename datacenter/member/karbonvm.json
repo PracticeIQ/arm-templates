@@ -39,6 +39,10 @@
         "diagnosticStorageAccountName": {
             "defaultValue": null,
             "type": "string"
+        },
+        "karbonAvailabilitySetName": {
+            "defaultValue": null,
+            "type": "string"
         }
     },
     "variables": {
@@ -135,6 +139,9 @@
                         "enabled": true,
                         "storageUri": "[reference(resourceId('Microsoft.Storage/storageAccounts', parameters('diagnosticStorageAccountName')), '2015-06-15').primaryEndpoints['blob']]"
                     }
+                },
+                "availabilitySet": {
+                    "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('karbonAvailabilitySetName'))]"
                 }
             }
         }
