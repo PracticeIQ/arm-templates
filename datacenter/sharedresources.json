@@ -57,7 +57,7 @@
       "properties": {
         "securityRules": [
           {
-            "name": "default-allow-rdp",
+            "name": "default-rdp-allow",
             "properties": {
               "description": "Default TCP port for Remote Desktop, so we can manage our VMs",
               "protocol": "Tcp",
@@ -71,7 +71,7 @@
             }
           },
           {
-            "name": "http",
+            "name": "http-allow",
             "properties": {
               "description": "Incoming HTTP, no TLS as it's terminated on the Gateway",
               "protocol": "Tcp",
@@ -85,7 +85,7 @@
             }
           },
           {
-            "name": "ftp",
+            "name": "ftp-allow",
             "properties": {
               "description": "We may use this for source code deployment, at least in the beginning. DSC may have other mechanisms",
               "protocol": "Tcp",
@@ -101,7 +101,7 @@
         ],
         "defaultSecurityRules": [
           {
-            "name": "AllowVnetInBound",
+            "name": "vnet-inbound-allow",
             "properties": {
               "description": "Allow inbound traffic from all VMs in VNET",
               "protocol": "*",
@@ -115,7 +115,7 @@
             }
           },
           {
-            "name": "AllowAzureLoadBalancerInBound",
+            "name": "load-balancer-inbound-allow",
             "properties": {
               "description": "Allow inbound traffic from azure load balancer/gateway",
               "protocol": "*",
@@ -129,7 +129,7 @@
             }
           },
           {
-            "name": "DenyAllInBound",
+            "name": "all-inbound-deny",
             "properties": {
               "description": "Deny all other inbound traffic",
               "protocol": "*",
@@ -143,7 +143,7 @@
             }
           },
           {
-            "name": "AllowVnetOutBound",
+            "name": "vnet-outbound-allow",
             "properties": {
               "description": "Allow outbound traffic from all VMs to all VMs in VNET",
               "protocol": "*",
@@ -157,7 +157,7 @@
             }
           },
           {
-            "name": "AllowInternetOutBound",
+            "name": "internet-outbound-allow",
             "properties": {
               "description": "Allow outbound traffic from all VMs to Internet; will need this if we pull from public repos",
               "protocol": "*",
@@ -171,7 +171,7 @@
             }
           },
           {
-            "name": "DenyAllOutBound",
+            "name": "all-outbound-deny",
             "properties": {
               "description": "Deny all other outbound traffic",
               "protocol": "*",
