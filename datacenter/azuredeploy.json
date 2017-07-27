@@ -32,8 +32,7 @@
     }
   },
   "variables": {
-    "karbonIpNamePrefix": "[concat(parameters('datacenterName'), '-karbon-ip-vm')]",
-    "karbonNicNamePrefix": "[concat(parameters('datacenterName'), '-karbon-nic-vm')]",
+    "karbonPrefix": "[concat(parameters('datacenterName'), '-karbon-vm')]",
     "karbonVmNamePrefix": "[concat(parameters('datacenterName'), 'karbonvm')]"
   },
   "resources": [
@@ -75,10 +74,10 @@
             "value": "[reference('sharedResources').outputs.virtualNetworkName.value]"
           },
           "karbonNicName": {
-            "value": "[concat(variables('karbonNicNamePrefix'), copyIndex(parameters('karbonStartIndex')))]"
+            "value": "[concat(variables('karbonPrefix'), copyIndex(parameters('karbonStartIndex')), '-nic1')]"
           },
           "karbonIpName": {
-            "value": "[concat(variables('karbonIpNamePrefix'), copyIndex(parameters('karbonStartIndex')))]"
+            "value": "[concat(variables('karbonPrefix'), copyIndex(parameters('karbonStartIndex')), '-pip1')]"
           },
           "karbonVmName": {
             "value": "[concat(variables('karbonVmNamePrefix'), copyIndex(parameters('karbonStartIndex')))]"
