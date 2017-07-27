@@ -30,6 +30,25 @@
         "description": "This must only be set by the calling script, as it contains the logic of looking at existing VMs"
       }
     },
+    "clientVMSize": {
+      "defaultValue": null,
+      "type": "string"
+    },
+    "clientVMCount": {
+      "defaultValue": null,
+      "type": "int",
+      "maxValue": 10,
+      "metadata": {
+        "description": "How many Client VMs to provision. Only matters if the script sets a clientStartIndex, default comes from env params"
+      }
+    },
+    "clientStartIndex": {
+      "defaultValue": 0,
+      "type": "int",
+      "metadata": {
+        "description": "This must only be set by the calling script, as it contains the logic of looking at existing VMs"
+      }
+    },
     "adminPassword": {
       "defaultValue": null,
       "type": "securestring"
@@ -37,7 +56,9 @@
   },
   "variables": {
     "karbonPrefix": "[concat(parameters('datacenterName'), '-karbon-vm')]",
-    "karbonVmNamePrefix": "[concat(parameters('datacenterName'), 'karbonvm')]"
+    "karbonVmNamePrefix": "[concat(parameters('datacenterName'), 'karbonvm')]",
+    "clientPrefix": "[concat(parameters('datacenterName'), '-client-vm')]",
+    "clientVmNamePrefix": "[concat(parameters('datacenterName'), 'clientvm')]"
   },
   "resources": [
     {
@@ -108,12 +129,67 @@
       "dependsOn": [
         "Microsoft.Resources/deployments/sharedResources"
       ]
+    },
+    {
+      "condition": "[greater(parameters('clientStartIndex'), 0)]",
+      "comments": "Client web/svc resources",
+      "apiVersion": "2017-05-10",
+      "name": "[concat('clientDeployVm', copyIndex(parameters('clientStartIndex')))]",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[uri(deployment().properties.templateLink.uri, 'member/clientvm.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "webNetworkSecurityGroupName": {
+            "value": "[reference('sharedResources').outputs.webNetworkSecurityGroupName.value]"
+          },
+          "virtualNetworkName": {
+            "value": "[reference('sharedResources').outputs.virtualNetworkName.value]"
+          },
+          "diagnosticStorageAccountName": {
+            "value": "[reference('sharedResources').outputs.diagnosticStorageAccountName.value]"
+          },
+          "clientNicName": {
+            "value": "[concat(variables('clientPrefix'), copyIndex(parameters('clientStartIndex')), '-nic1')]"
+          },
+          "clientIpName": {
+            "value": "[concat(variables('clientPrefix'), copyIndex(parameters('clientStartIndex')), '-pip1')]"
+          },
+          "clientVmName": {
+            "value": "[concat(variables('clientVmNamePrefix'), copyIndex(parameters('clientStartIndex')))]"
+          },
+          "adminPassword": {
+            "value": "[parameters('adminPassword')]"
+          },
+          "clientVMSize": {
+            "value": "[parameters('clientVMSize')]"
+          },
+          "clientAvailabilitySetName": {
+            "value": "[reference('sharedResources').outputs.clientAvailabilitySetName.value]"
+          }
+        }
+      },
+      "copy": {
+        "name": "clientIterator",
+        "count": "[parameters('clientVMCount')]",
+        "mode": "Serial"
+      },
+      "dependsOn": [
+        "Microsoft.Resources/deployments/sharedResources"
+      ]
     }
   ],
   "outputs": {
     "karbonVMCount": {
       "type": "int",
       "value": "[parameters('karbonVMCount')]"
+    },
+    "clientVMCount": {
+      "type": "int",
+      "value": "[parameters('clientVMCount')]"
     },
     "diagnosticStorageAccountName": {
       "type": "string",

@@ -16,7 +16,8 @@
     "webNetworkSecurityGroupName": "[concat(parameters('datacenterName'), '-web-nsg')]",
     "virtualNetworkName": "[concat(parameters('datacenterName'), '-datacenter-vnet')]",
     "diagnosticStorageAccountName": "[concat(parameters('datacenterName'), 'diagstr', uniqueString(resourceGroup().id))]",
-    "karbonAvailabilitySetName": "[concat(parameters('datacenterName'), '-karbon-as')]"
+    "karbonAvailabilitySetName": "[concat(parameters('datacenterName'), '-karbon-as')]",
+    "clientAvailabilitySetName": "[concat(parameters('datacenterName'), '-client-as')]"
   },
   "resources": [
     {
@@ -207,7 +208,7 @@
     },
     {
       "comments": "Availability Set for the Client Web/Svc tier",
-      "name": "[concat(parameters('datacenterName'), '-client-as')]",
+      "name": "[variables('clientAvailabilitySetName')]",
       "type": "Microsoft.Compute/availabilitySets",
       "apiVersion": "2016-04-30-preview",
       "location": "[resourceGroup().location]",
@@ -246,6 +247,10 @@
     },
     "karbonAvailabilitySetName": {
       "value": "[variables('karbonAvailabilitySetName')]",
+      "type": "string"
+    },
+    "clientAvailabilitySetName": {
+      "value": "[variables('clientAvailabilitySetName')]",
       "type": "string"
     }
   }
