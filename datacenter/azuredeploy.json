@@ -88,8 +88,7 @@
       "copy": {
         "name": "karbonIterator",
         "count": "[parameters('karbonVMCount')]",
-        "mode": "Serial",
-        "batchSize": 2
+        "mode": "Serial"
       },
       "dependsOn": [
         "Microsoft.Resources/deployments/sharedResources"
