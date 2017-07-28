@@ -1,0 +1,258 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "datacenterName": {
+      "defaultValue": null,
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 3,
+      "metadata": {
+        "description": "The 3-char datacenter string that prefixes the resource group."
+      }
+    },
+    "karbonBEPool": {
+      "type": "array",
+      "metadata": {
+        "description": "The fqdns of the VMs in the Karbon Pool"
+      }
+    },
+    "clientBEPool": {
+      "type": "array",
+      "metadata": {
+        "description": "The fqdns of the VMs in the Client Pool"
+      }
+    },
+    "urlHostName": {
+      "type": "string",
+      "metadata": {
+        "description": "The hostname for the karbon app"
+      }
+    }
+  },
+  "variables": {
+    "appGatewayName": "[concat(parameters('datacenterName'), '-datacenter-agw')]",
+    "appGatewayIPName": "[concat(parameters('datacenterName'), '-gateway-pip')]",
+    "clientAppHostName": "[concat(parameters('urlHostName'), 'client')]"
+  },
+  "resources": [
+    {
+      "comments": "Allocate a Public IP for the Gateway, this is the one that will need DNS entries, so output to the script",
+      "name": "[variables('appGatewayIPName')]",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "apiVersion": "2016-09-01",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic",
+        "dnsSettings": {
+          "domainNameLabel": "[variables('appGatewayIpName')]"
+        }
+      }
+    },
+    {
+      "comments": "The Application Gateway presents the only public entry points to the datacenter.",
+      "type": "Microsoft.Network/applicationGateways",
+      "name": "[variables('appGatewayName')]",
+      "apiVersion": "2017-06-01",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "sku": {
+          "name": "Standard_Medium",
+          "tier": "Standard",
+          "capacity": 1
+        },
+        "sslPolicy": {
+          "disabledSslProtocols": [
+            "TLSv1_0", "TLSv1_1"
+          ]
+        },
+        "gatewayIPConfigurations": [
+          {
+            "name": "gtw-ip-config",
+            "properties": {
+              "subnet": {
+                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', 'Public')]"
+              }
+            }
+          }
+        ],
+        "sslCertificates": [
+          {
+            "name": "star-karbonhq-com",
+            "properties": {
+              "publicCertData": "MIIFcwYJKoZIhvcNAQcCoIIFZDCCBWACAQExADALBgkqhkiG9w0BBwGgggVIMIIFRDCCBCygAwIBAgIQAjJ7LVRNsvr/M4vWqSha4zANBgkqhkiG9w0BAQsFADBNMQswCQYDVQQGEwJVUzEVMBMGA1UEChMMRGlnaUNlcnQgSW5jMScwJQYDVQQDEx5EaWdpQ2VydCBTSEEyIFNlY3VyZSBTZXJ2ZXIgQ0EwHhcNMTcwMTA0MDAwMDAwWhcNMjAwMTA5MTIwMDAwWjCBhzELMAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBGcmFuY2lzY28xFzAVBgNVBAoTDlByYWN0aWNlSVEgSW5jMRkwFwYDVQQLExBMaXZlIEFwcGxpY2F0aW9uMRcwFQYDVQQDDA4qLmthcmJvbmhxLmNvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBANOej/I890tWMzNV4bSl8yeAhvZUnPvG073MGLA9Ei1FTV8ab5XALL92bbVsHSywLRKlF/qBiOfaCXjcWHlUcSrrPeiYRJqzeizI50turO85dXjXQqTRJiYiQvTuZFcYS4CBJ4lbbDh9mRe6l2A65EqwpvB/vo+fvtwlqX/DBwWMqyKcrj4u/cOszUfi6f/VCyu2HdjwKd1A4NAXG/sIqOWR9S/fDaTlqHNSwoQ1KPv8N4ykJM/vcOchhdCLf2DH3uoq51AdX7SB0lRjI/cSRzCfAOuLA7YmUvnne22f1MJFExodS8fhKX7XmHN0c30Gs5NJsS54jJrePb2GdrmvKdkCAwEAAaOCAeMwggHfMB8GA1UdIwQYMBaAFA+AYRyCMWHVLyjnjUY4tCzhxtniMB0GA1UdDgQWBBQdWVP0UaCNDfXvtK4JODTcOO5CSDAnBgNVHREEIDAegg4qLmthcmJvbmhxLmNvbYIMa2FyYm9uaHEuY29tMA4GA1UdDwEB/wQEAwIFoDAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwawYDVR0fBGQwYjAvoC2gK4YpaHR0cDovL2NybDMuZGlnaWNlcnQuY29tL3NzY2Etc2hhMi1nNS5jcmwwL6AtoCuGKWh0dHA6Ly9jcmw0LmRpZ2ljZXJ0LmNvbS9zc2NhLXNoYTItZzUuY3JsMEwGA1UdIARFMEMwNwYJYIZIAYb9bAEBMCowKAYIKwYBBQUHAgEWHGh0dHBzOi8vd3d3LmRpZ2ljZXJ0LmNvbS9DUFMwCAYGZ4EMAQICMHwGCCsGAQUFBwEBBHAwbjAkBggrBgEFBQcwAYYYaHR0cDovL29jc3AuZGlnaWNlcnQuY29tMEYGCCsGAQUFBzAChjpodHRwOi8vY2FjZXJ0cy5kaWdpY2VydC5jb20vRGlnaUNlcnRTSEEyU2VjdXJlU2VydmVyQ0EuY3J0MAwGA1UdEwEB/wQCMAAwDQYJKoZIhvcNAQELBQADggEBACf00AWZPybzRHkn5LrsDHiVQnPKZ50lMFHbc7KMvFhd6DnOnJ+uNXbk3CeEEarnytRO6ATYRv4OIoJcCXndRDE+lYHbkcC+Q0Mat7Ds/J9Df8kcgb/n8HAtjLFF5jsuVjmwb9iFzo0JMkIarCFD3A9go7rJZPf4KlEqZUuFTXjDIE+f1HQCsvKVURDmK12VhyyaRUhkRjiGszQneIvk8VyoPRNdtoHqLZGtuEwDqAVbfoiyg4oOzwOisfWYQfYOVzJW0o3bmIUZBlGm8D500R1z5u9WiYXrhxn0W5KvJlOeq/N9OT3Bij5TVmBA/zKts54AI8XYKblPLpLHR665QfMxAA=="
+            }
+          }
+        ],
+        "authenticationCertificates": [],
+        "frontendIPConfigurations": [
+          {
+            "name": "gtw-frontend-ip",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('appGatewayIPName'))]"
+              }
+            }
+          }
+        ],
+        "frontendPorts": [
+          {
+            "name": "gtw-frontend-port",
+            "properties": {
+              "port": 443
+            }
+          }
+        ],
+        "backendAddressPools": [
+          {
+            "name": "gtw-karbon-be-pool",
+            "properties": {
+              "backendAddresses": "[parameters('karbonBEPool')]"
+            }
+          },
+          {
+            "name": "gtw-client-be-pool",
+            "properties": {
+              "backendAddresses": "[parameters('clientBEPool')]"
+            }
+          }
+        ],
+        "backendHttpSettingsCollection": [
+          {
+            "name": "gtw-client-be-http-settings",
+            "properties": {
+              "port": 80,
+              "protocol": "Http",
+              "cookieBasedAffinity": "Disabled",
+              "pickHostNameFromBackendAddress": false,
+              "probeEnabled": true,
+              "requestTimeout": 20,
+              "probe": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/probes', variables('appGatewayName'), 'gtw-probe-site-client')]"
+              }
+            }
+          },
+          {
+            "name": "gtw-karbon-be-http-settings",
+            "properties": {
+              "port": 80,
+              "protocol": "Http",
+              "cookieBasedAffinity": "Disabled",
+              "pickHostNameFromBackendAddress": false,
+              "probeEnabled": true,
+              "requestTimeout": 20,
+              "probe": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/probes', variables('appGatewayName'), 'gtw-probe-site-karbon')]"
+              }
+            }
+          }
+        ],
+        "httpListeners": [
+          {
+            "name": "gtw-client-http-listener",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', variables('appGatewayName'), 'gtw-frontend-id')]"
+              },
+              "frontendPort": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/frontendPorts', variables('appGatewayName'), 'gtw-frontend-port')]"
+              },
+              "protocol": "Https",
+              "sslCertificate": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/sslCertificates', variables('appGatewayName'), 'star-karbonhq-com')]"
+              },
+              "hostName": "[variables('clientAppHostName')]",
+              "requireServerNameIndication": true
+            }
+          },
+          {
+            "name": "gtw-karbon-http-listener",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', variables('appGatewayName'), 'gtw-frontend-id')]"
+              },
+              "frontendPort": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/frontendPorts', variables('appGatewayName'), 'gtw-frontend-port')]"
+              },
+              "protocol": "Https",
+              "sslCertificate": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/sslCertificates', variables('appGatewayName'), 'star-karbonhq-com')]"
+              },
+              "hostName": "[parameters('urlHostName')]",
+              "requireServerNameIndication": true
+            }
+          }
+        ],
+
+        "requestRoutingRules": [
+          {
+            "name": "gtw-client-rules",
+            "properties": {
+              "ruleType": "Basic",
+              "httpListener": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/httpListeners', variables('appGatewayName'), 'gtw-client-http-listener')]"
+              },
+              "backendAddressPool": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/backendAddressPools', variables('appGatewayName'), 'gtw-client-be-pool')]"
+              },
+              "backendHttpSettings": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection', variables('appGatewayName'), 'gtw-client-be-http-settings')]"
+              }
+            }
+          },
+          {
+            "name": "dev-karbon-multi-rules",
+            "properties": {
+              "ruleType": "Basic",
+              "httpListener": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/httpListeners', variables('appGatewayName'), 'gtw-karbon-http-listener')]"
+              },
+              "backendAddressPool": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/backendAddressPools', variables('appGatewayName'), 'gtw-karbon-be-pool')]"
+              },
+              "backendHttpSettings": {
+                "id": "[resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection', variables('appGatewayName'), 'gtw-karbon-be-http-settings')]"
+              }
+            }
+          }
+        ],
+        "probes": [
+          {
+            "name": "gtw-probe-site-client",
+            "properties": {
+              "protocol": "Http",
+              "host": "[variables('clientAppHostName')]",
+              "path": "/index.html",
+              "interval": 30,
+              "timeout": 30,
+              "unhealthyThreshold": 3,
+              "pickHostNameFromBackendHttpSettings": false,
+              "minServers": 0,
+              "match": {}
+            }
+          },
+          {
+            "name": "gtw-probe-site-karbon",
+            "properties": {
+              "protocol": "Http",
+              "host": "[parameters('urlHostName')]",
+              "path": "/index.html",
+              "interval": 30,
+              "timeout": 30,
+              "unhealthyThreshold": 3,
+              "pickHostNameFromBackendHttpSettings": false,
+              "minServers": 0,
+              "match": {}
+            }
+          }
+        ],
+        "redirectConfigurations": []
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/publicIPAddresses', variables('appGatewayIpName'))]"
+      ]
+    }
+  ],
+  "outputs": {}
+}
