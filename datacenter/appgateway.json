@@ -31,7 +31,8 @@
     }
   },
   "variables": {
-    "appGatewayName": "[concat(parameters('datacenterName'), '-datacenter-agw')]",
+    "vnetName": "[concat(parameters('datacenterName'), '-datacenter-vnet')]",
+    "appGatewayName": "[concat(parameters('datacenterName'), '-datacenter-gtw')]",
     "appGatewayIPName": "[concat(parameters('datacenterName'), '-gateway-pip')]",
     "clientAppHostName": "[concat(parameters('urlHostName'), 'client')]"
   },
@@ -71,7 +72,7 @@
             "name": "gtw-ip-config",
             "properties": {
               "subnet": {
-                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', 'Public')]"
+                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', concat(variables('vnetName'), 'Public'))]"
               }
             }
           }
