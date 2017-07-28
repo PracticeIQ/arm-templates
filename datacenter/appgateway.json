@@ -72,7 +72,7 @@
             "name": "gtw-ip-config",
             "properties": {
               "subnet": {
-                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', concat(variables('vnetName'), 'Public'))]"
+                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), 'Public')]"
               }
             }
           }
