@@ -183,14 +183,6 @@
     }
   ],
   "outputs": {
-    "karbonVMCount": {
-      "type": "int",
-      "value": "[parameters('karbonVMCount')]"
-    },
-    "clientVMCount": {
-      "type": "int",
-      "value": "[parameters('clientVMCount')]"
-    },
     "diagnosticStorageAccountName": {
       "type": "string",
       "value": "[reference('sharedResources').outputs.diagnosticStorageAccountName.value]"
