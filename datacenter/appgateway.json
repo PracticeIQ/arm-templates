@@ -154,7 +154,7 @@
             "name": "gtw-client-http-listener",
             "properties": {
               "frontendIPConfiguration": {
-                "id": "[resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', variables('appGatewayName'), 'gtw-frontend-id')]"
+                "id": "[resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', variables('appGatewayName'), 'gtw-frontend-ip')]"
               },
               "frontendPort": {
                 "id": "[resourceId('Microsoft.Network/applicationGateways/frontendPorts', variables('appGatewayName'), 'gtw-frontend-port')]"
@@ -171,7 +171,7 @@
             "name": "gtw-karbon-http-listener",
             "properties": {
               "frontendIPConfiguration": {
-                "id": "[resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', variables('appGatewayName'), 'gtw-frontend-id')]"
+                "id": "[resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', variables('appGatewayName'), 'gtw-frontend-ip')]"
               },
               "frontendPort": {
                 "id": "[resourceId('Microsoft.Network/applicationGateways/frontendPorts', variables('appGatewayName'), 'gtw-frontend-port')]"
