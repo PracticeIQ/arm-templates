@@ -201,7 +201,7 @@
             }
           },
           {
-            "name": "dev-karbon-multi-rules",
+            "name": "gtw-karbon-rules",
             "properties": {
               "ruleType": "Basic",
               "httpListener": {
