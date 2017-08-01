@@ -23,10 +23,22 @@
         "description": "The fqdns of the VMs in the Client Pool"
       }
     },
-    "urlHostName": {
+    "hostName": {
       "type": "string",
       "metadata": {
         "description": "The hostname for the karbon app"
+      }
+    },
+    "clientHostName": {
+      "type": "string",
+      "metadata": {
+        "description": "The hostname for the client app"
+      }
+    },
+    "domainName": {
+      "type": "string",
+      "metadata": {
+        "description": "The public domain name for the hosts, must match the cert."
       }
     },
     "sslData": {
@@ -46,7 +58,8 @@
     "vnetName": "[concat(parameters('datacenterName'), '-datacenter-vnet')]",
     "appGatewayName": "[concat(parameters('datacenterName'), '-datacenter-gtw')]",
     "appGatewayIPName": "[concat(parameters('datacenterName'), '-gateway-pip')]",
-    "clientAppHostName": "[concat(parameters('urlHostName'), 'client')]"
+    "karbonUrl": "[concat(parameters('hostName'), '.', parameters('domainName'))]",
+    "clientUrl": "[concat(parameters('clientHostName'), '.', parameters('domainName'))]"
   },
   "resources": [
     {
@@ -173,7 +186,7 @@
               "sslCertificate": {
                 "id": "[resourceId('Microsoft.Network/applicationGateways/sslCertificates', variables('appGatewayName'), 'star-karbonhq-com')]"
               },
-              "hostName": "[variables('clientAppHostName')]",
+              "hostName": "[variables('clientUrl')]",
               "requireServerNameIndication": true
             }
           },
@@ -190,7 +203,7 @@
               "sslCertificate": {
                 "id": "[resourceId('Microsoft.Network/applicationGateways/sslCertificates', variables('appGatewayName'), 'star-karbonhq-com')]"
               },
-              "hostName": "[parameters('urlHostName')]",
+              "hostName": "[variables('karbonUrl')]",
               "requireServerNameIndication": true
             }
           }
@@ -233,7 +246,7 @@
             "name": "gtw-probe-site-client",
             "properties": {
               "protocol": "Http",
-              "host": "[variables('clientAppHostName')]",
+              "host": "[parameters('clientHostName')]",
               "path": "/index.html",
               "interval": 30,
               "timeout": 30,
@@ -247,7 +260,7 @@
             "name": "gtw-probe-site-karbon",
             "properties": {
               "protocol": "Http",
-              "host": "[parameters('urlHostName')]",
+              "host": "[parameters('hostName')]",
               "path": "/index.html",
               "interval": 30,
               "timeout": 30,
